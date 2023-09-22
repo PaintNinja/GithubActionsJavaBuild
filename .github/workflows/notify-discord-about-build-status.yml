@@ -24,8 +24,7 @@ jobs:
         case "${title,,}" in
           "succeeded")
             colour=2684508;;
-          "failed")
-          "cancelled")
+          "failed" | "cancelled")
             colour=16071719;;
           "started")
             colour=3224808;;
