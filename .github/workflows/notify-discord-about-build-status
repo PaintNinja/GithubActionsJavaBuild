@@ -1,0 +1,39 @@
+name: Notify Discord about build status
+
+on:
+  workflow_call:
+    inputs:
+      build_status:
+        required: true
+        type: string
+
+jobs:
+  notify-discord:
+    name: Notify Discord
+    runs-on: ubuntu-latest
+    if: ${{ !cancelled() }}
+    steps:
+    - name: Create JSON embed for Discord
+      id: create-json
+      run: |
+        echo "discord_json_embed<<EOF" >> $GITHUB_OUTPUT
+        jq -n '[{
+          "author": {
+            "name": "${{ github.event.repository.name }}",
+            "url": "${{ github.server_url }}/${{ github.repository }}"
+          },
+          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
+          "title": "Build ${{ inputs.build_status }}",
+          "fields": [{
+            "name": "${{ github.ref_type }}",
+            "value": "${{ github.ref_name }}",
+            "inline": true
+          }]
+        }]' >> $GITHUB_OUTPUT
+        echo "EOF" >> $GITHUB_OUTPUT
+    - name: Send notification
+      uses: Ilshidur/action-discord@0.3.2
+      env:
+        DISCORD_USERNAME: GitHub Actions
+        DISCORD_AVATAR: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
+        DISCORD_EMBEDS: ${{ steps.create-json.outputs.discord_json_embed }}
