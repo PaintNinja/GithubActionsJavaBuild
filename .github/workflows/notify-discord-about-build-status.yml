@@ -28,7 +28,7 @@ jobs:
           "started")
             colour=3224808;;
         esac
-        echo "discord_json_embed<<EOF" >> $GITHUB_OUTPUT
+        echo "discord_json_embed<<EOF" >> tmp.json
         jq -nc '[{
           "author": {
             "name": "${{ github.event.repository.name }}",
@@ -50,11 +50,12 @@ jobs:
               "inline": true
             }
           ]
-        }]' >> $GITHUB_OUTPUT
+        }]' >> tmp.json
         if [ "${title,,}" == "started" ]; then
-          echo $GITHUB_OUTPUT | jq '.[0].fields += [{ "name": "Commit message", "value": "${{ github.event.workflow_run.head_commit.message }}" }]' >> $GITHUB_OUTPUT
+          cat tmp.json | jq '.[0].fields += [{ "name": "Commit message", "value": "${{ github.event.workflow_run.head_commit.message }}" }]' | tee tmp.json
         fi
-        echo "EOF" >> $GITHUB_OUTPUT
+        echo "EOF" >> tmp.json
+        cat tmp.json >> $GITHUB_OUTPUT
     - name: Send notification
       run: |
         curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data '{"username": "GitHub Actions", "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", "embeds": ${{ env.DISCORD_EMBEDS }}}' ${{ env.DISCORD_WEBHOOK }}
