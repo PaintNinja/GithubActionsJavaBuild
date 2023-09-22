@@ -6,6 +6,9 @@ on:
       build_status:
         required: true
         type: string
+    secrets:
+      webhook_url:
+        required: true
 
 jobs:
   notify-discord:
