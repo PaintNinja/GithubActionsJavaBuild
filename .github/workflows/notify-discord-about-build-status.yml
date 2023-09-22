@@ -14,7 +14,7 @@ jobs:
   notify-discord:
     name: Notify Discord
     runs-on: ubuntu-latest
-    if: ${{ !cancelled() }}
+    if: ${{ always() }}
     steps:
     - name: Create JSON embed for Discord
       id: create-json
@@ -22,16 +22,15 @@ jobs:
         title="${{ inputs.build_status }}"
         title=${title^} # capitalise first word
         case "${title,,}" in
-          "succeeded")
+          "success")
             colour=2684508;;
           "failed" | "cancelled")
             colour=16071719;;
           "started")
             colour=3224808;;
         esac
-        echo $title
         echo "discord_json_embed<<EOF" >> $GITHUB_OUTPUT
-        jq -n '[{
+        jq -nc '[{
           "name": "GitHub Actions",
           "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
           "author": {
@@ -40,11 +39,11 @@ jobs:
             "icon_url": "https://avatars.githubusercontent.com/u/1390178"
           },
           "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-          "title": "$title",
-          "color": "$colour"
+          "title": "'$title'",
+          "color": "'$colour'",
           "fields": [
             {
-              "name": "Build number"
+              "name": "Build number",
               "value": "???",
               "inline": true
             },
