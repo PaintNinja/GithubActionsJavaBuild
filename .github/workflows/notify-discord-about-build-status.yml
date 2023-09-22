@@ -54,7 +54,7 @@ jobs:
         # todo: commit message
         #if [ "${title,,}" == "started" ]; then
         #  echo $GITHUB_OUTPUT | jq '.[0].fields += [{ "name": "Commit message", "value": "${{ github.event.workflow_run.head_commit.message }}" }]' >> $GITHUB_OUTPUT
-        #fi 
+        #fi
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Send notification
       run: |
