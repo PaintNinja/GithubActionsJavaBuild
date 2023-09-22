@@ -6,9 +6,6 @@ on:
       build_status:
         required: true
         type: string
-      webhook_url:
-        required: true
-        type: string
 
 jobs:
   notify-discord:
@@ -36,8 +33,10 @@ jobs:
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Send notification
       uses: Ilshidur/action-discord@0.3.2
+      with:
+        args: ""
       env:
-        DISCORD_WEBHOOK: ${{ inputs.webhook_url }}
+        DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
         DISCORD_USERNAME: GitHub Actions
         DISCORD_AVATAR: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
         DISCORD_EMBEDS: ${{ steps.create-json.outputs.discord_json_embed }}

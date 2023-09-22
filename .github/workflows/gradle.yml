@@ -16,6 +16,7 @@ jobs:
     uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: started
+    secrets:
       webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
   build:
