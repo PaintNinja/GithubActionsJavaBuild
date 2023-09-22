@@ -12,18 +12,14 @@ permissions:
 
 jobs:
   notify-discord-start:
-    runs-on: ubuntu-latest
-    steps:
-    - name: Notify Discord (start)
-      uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
-      with:
-        build_status: started
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+    name: Notify Discord (start)
+    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+    with:
+      build_status: started
+      webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
   build:
     runs-on: ubuntu-latest
-    
     steps:
     - uses: actions/checkout@v3
 
@@ -36,12 +32,9 @@ jobs:
         arguments: build
 
   notify-discord-end:
-    runs-on: ubuntu-latest
+    name: Notify Discord (end)
     needs: [ "notify-discord-start", "build" ]
-    steps:
-    - name: Notify Discord (end)
-      uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
-      with:
-        build_status: finished
-      env:
-        DISCORD_WEBHOOK: ${{ secrets.DISCORD_WEBHOOK_URL }}
+    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+    with:
+      build_status: finished
+      webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
