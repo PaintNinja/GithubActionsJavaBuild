@@ -15,7 +15,7 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - name: Notify Discord (start)
-      uses: PaintNinja/GithubActionsJavaBuild/notify-discord-about-build-status.yml@master
+      uses: PaintNinja/GithubActionsJavaBuild/notify-discord-about-build-status@master
       with:
         build_status: started
       env:
@@ -40,7 +40,7 @@ jobs:
     needs: build
     steps:
     - name: Notify Discord (start)
-      uses: PaintNinja/GithubActionsJavaBuild/notify-discord-about-build-status.yml@master
+      uses: PaintNinja/GithubActionsJavaBuild/notify-discord-about-build-status@master
       with:
         build_status: started
       env:
