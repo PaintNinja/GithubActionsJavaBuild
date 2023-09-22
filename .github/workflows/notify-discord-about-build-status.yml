@@ -14,7 +14,6 @@ jobs:
   notify-discord:
     name: Notify Discord
     runs-on: ubuntu-latest
-    if: ${{ always() }}
     steps:
     - name: Create JSON embed for Discord
       id: create-json
@@ -52,7 +51,7 @@ jobs:
             }
           ]
         }]' >> $GITHUB_OUTPUT
-        if [ "${title,,}" == "started" ] then
+        if [ "${title,,}" == "started" ]; then
           jq '.[0].fields += [{ "name": "Commit message", "value": "${{ github.event.workflow_run.head_commit.message }}" }]' >> $GITHUB_OUTPUT
         fi
         echo "EOF" >> $GITHUB_OUTPUT

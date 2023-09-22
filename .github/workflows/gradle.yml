@@ -35,6 +35,7 @@ jobs:
   notify-discord-end:
     name: Notify Discord (end)
     needs: [ "build" ]
+    if: ${{ always() }}
     uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: ${{ needs.build.result }}
