@@ -35,9 +35,8 @@ jobs:
         }]' >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Send notification
-      uses: Ilshidur/action-discord@0.3.2
-      with:
-        args: ""
+      run: |
+        curl --http2-prior-knowledge --false-start --tcp-fastopen -6 -H "Content-Type: application/json" --request POST --data '$ENV.DISCORD_EMBEDS' $ENV.DISCORD_WEBHOOK
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
         DISCORD_USERNAME: GitHub Actions
