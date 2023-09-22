@@ -36,7 +36,7 @@ jobs:
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Send notification
       run: |
-        curl --http2-prior-knowledge --false-start --tcp-fastopen -H "Content-Type: application/json" --request POST --data '{"embeds": ${{ env.DISCORD_EMBEDS }}}' ${{ env.DISCORD_WEBHOOK }}
+        curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data '{"embeds": ${{ env.DISCORD_EMBEDS }}}' ${{ env.DISCORD_WEBHOOK }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
         DISCORD_USERNAME: GitHub Actions
