@@ -19,19 +19,42 @@ jobs:
     - name: Create JSON embed for Discord
       id: create-json
       run: |
+        title="${{ inputs.build_status }}"
+        title=${title^} # capitalise first word
+        case "${title,,}" in
+          "succeeded")
+            colour=2684508;;
+          "failed")
+          "cancelled")
+            colour=16071719;;
+          "started")
+            colour=3224808;;
+        esac
+        echo $title
         echo "discord_json_embed<<EOF" >> $GITHUB_OUTPUT
         jq -n '[{
+          "name": "GitHub Actions",
+          "avatar": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png",
           "author": {
             "name": "${{ github.event.repository.name }}",
-            "url": "${{ github.server_url }}/${{ github.repository }}"
+            "url": "${{ github.server_url }}/${{ github.repository }}",
+            "icon_url": "https://avatars.githubusercontent.com/u/1390178"
           },
           "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-          "title": "Build ${{ inputs.build_status }}",
-          "fields": [{
-            "name": "${{ github.ref_type }}",
-            "value": "${{ github.ref_name }}",
-            "inline": true
-          }]
+          "title": "$title",
+          "color": "$colour"
+          "fields": [
+            {
+              "name": "Build number"
+              "value": "???",
+              "inline": true
+            },
+            {
+              "name": "Build ${{ github.ref_type }}",
+              "value": "${{ github.ref_name }}",
+              "inline": true
+            }
+          ]
         }]' >> $GITHUB_OUTPUT
         echo "EOF" >> $GITHUB_OUTPUT
     - name: Send notification
@@ -39,6 +62,4 @@ jobs:
         curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data '{"embeds": ${{ env.DISCORD_EMBEDS }}}' ${{ env.DISCORD_WEBHOOK }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
-        DISCORD_USERNAME: GitHub Actions
-        DISCORD_AVATAR: https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png
         DISCORD_EMBEDS: ${{ steps.create-json.outputs.discord_json_embed }}

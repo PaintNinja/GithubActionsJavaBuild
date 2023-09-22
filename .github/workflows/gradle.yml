@@ -11,13 +11,13 @@ permissions:
   contents: read
 
 jobs:
-  notify-discord-start:
-    name: Notify Discord (start)
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
-    with:
-      build_status: started
-    secrets:
-      webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
+  # notify-discord-start:
+  #   name: Notify Discord (start)
+  #   uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+  #   with:
+  #     build_status: started
+  #   secrets:
+  #     webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
 
   build:
     runs-on: ubuntu-latest
@@ -37,6 +37,6 @@ jobs:
     needs: [ "notify-discord-start", "build" ]
     uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
-      build_status: finished
+      build_status: ${{ github.workflow.jobs.build.status }}
     secrets:
       webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
