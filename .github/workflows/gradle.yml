@@ -1,6 +1,3 @@
-# This workflow will build a Java project with Gradle and cache/restore any dependencies to improve the workflow execution time
-# For more information see: https://docs.github.com/en/actions/automating-builds-and-tests/building-and-testing-java-with-gradle
-
 name: Java CI with Gradle
 
 on:
@@ -31,10 +28,12 @@ jobs:
       uses: gradle/gradle-build-action@v2
       with:
         arguments: build
+      env:
+        JAVA_HOME: $JAVA_HOME_17_X64 # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md#java
 
   notify-discord-end:
     name: Notify Discord (end)
-    needs: [ "build" ]
+    needs: [ "notify-discord-start", "build" ]
     if: ${{ always() }}
     uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
