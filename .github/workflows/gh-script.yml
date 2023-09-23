@@ -1,18 +1,13 @@
 name: GitHub script test
 
 on:
-  workflow_dispatch:
-    inputs:
-      build_status:
-        required: true
-        type: string
+  workflow_call:
 
 jobs:
   script:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/github-script@v6
-      with:
-        script: |
-          console.log(context.payload.inputs.build_status)
-          //console.log(github)
+    - run: |
+        echo $JAVA_HOME_17_X64
+        set JAVA_HOME=$JAVA_HOME_17_X64
+        echo $JAVA_HOME
