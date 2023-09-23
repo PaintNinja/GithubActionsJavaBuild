@@ -19,20 +19,17 @@ jobs:
       id: create-json
       uses: actions/github-script@v6
       env:
+        build_status: ${{ inputs.build_status }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
-        head_commit_message: ${{ github.event.workflow_run.head_commit.message }}
       with:
         result-encoding: string
         script: |
           'use strict';
           const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-          const { ref_type, ref_name, head_commit_message } = process.env
-
-          console.log('context')
-          console.log(context)
+          const { build_status, ref_type, ref_name } = process.env
           
-          const title = capitalise(context.payload.inputs.build_status)
+          const title = capitalise(build_status)
           let colour
           switch (title) {
             case 'Success':
@@ -78,7 +75,7 @@ jobs:
           if (title === 'Started') {
             json.embeds[0].fields.push({
               name: 'Commit message',
-              value: `${head_commit_message}`
+              value: `${context.payload.head_commit.message}`
             })
           }
 
