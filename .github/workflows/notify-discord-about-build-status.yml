@@ -17,48 +17,71 @@ jobs:
     steps:
     - name: Create JSON embed for Discord
       id: create-json
-      run: |
-        title="${{ inputs.build_status }}"
-        title=${title^} # capitalise first word
-        case "${title,,}" in
-          "success")
-            colour=2684508;;
-          "failed" | "cancelled")
-            colour=16071719;;
-          "started")
-            colour=3224808;;
-        esac
-        echo "discord_json_embed<<EOF" >> $GITHUB_OUTPUT
-        jq -nc '[{
-          "author": {
-            "name": "${{ github.event.repository.name }}",
-            "url": "${{ github.server_url }}/${{ github.repository }}",
-            "icon_url": "https://avatars.githubusercontent.com/u/1390178"
-          },
-          "url": "${{ github.server_url }}/${{ github.repository }}/actions/runs/${{ github.run_id }}",
-          "title": "'$title'",
-          "color": "'$colour'",
-          "fields": [
-            {
-              "name": "Build number",
-              "value": "???",
-              "inline": true
-            },
-            {
-              "name": "Build ${{ github.ref_type }}",
-              "value": "${{ github.ref_name }}",
-              "inline": true
-            }
-          ]
-        }]' >> $GITHUB_OUTPUT
-        # todo: commit message
-        #if [ "${title,,}" == "started" ]; then
-        #  echo $GITHUB_OUTPUT | jq '.[0].fields += [{ "name": "Commit message", "value": "${{ github.event.workflow_run.head_commit.message }}" }]' >> $GITHUB_OUTPUT
-        #fi
-        echo "EOF" >> $GITHUB_OUTPUT
+      uses: actions/github-script@v6
+      env:
+        ref_type: ${{ github.ref_type }}
+        ref_name: ${{ github.ref_name }}
+        head_commit_message: ${{ github.event.workflow_run.head_commit.message }}
+      with:
+        result-encoding: string
+        script: |
+          'use strict';
+          const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+          const { ref_type, ref_name, head_commit_message } = process.env
+          
+          const title = capitalise(context.payload.inputs.build_status)
+          let colour
+          switch (title) {
+            case 'Success':
+              colour = 2684508
+              break
+            case 'Failed':
+            case 'Cancelled':
+              colour = 16071719
+              break
+            case 'Started':
+              colour = 3224808
+              break
+          }
+
+          const json = {
+            username: 'GitHub Actions',
+            avatar_url: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+            embeds: [{
+              author: {
+                name: context.payload.repository.name,
+                url: context.payload.repository.html_url,
+                icon_url: 'https://avatars.githubusercontent.com/u/1390178'
+              },
+              url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              title: `${title}`,
+              color: `${colour}`,
+              fields: []
+            }]
+          }
+
+          json.embeds[0].fields.push({
+            name: 'Build number',
+            value: '???',
+            inline: true
+          })
+
+          json.embeds[0].fields.push({
+            name: `Build ${ref_type}`,
+            value: `${ref_name}`,
+            inline: true
+          })
+
+          if (title === 'Started') {
+            json.embeds[0].fields.push({
+              name: 'Commit message',
+              value: `${head_commit_message}`
+            })
+          }
+
+          return JSON.stringify(json)
     - name: Send notification
       run: |
-        curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data '{"username": "GitHub Actions", "avatar_url": "https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png", "embeds": ${{ env.DISCORD_EMBEDS }}}' ${{ env.DISCORD_WEBHOOK }}
+        curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data ${{ steps.create-json.outputs.result }} ${{ env.DISCORD_WEBHOOK }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
-        DISCORD_EMBEDS: ${{ steps.create-json.outputs.discord_json_embed }}
