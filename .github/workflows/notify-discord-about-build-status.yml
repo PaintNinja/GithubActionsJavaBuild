@@ -35,7 +35,7 @@ jobs:
             case 'Success':
               colour = 2684508
               break
-            case 'Failed':
+            case 'Failure':
             case 'Cancelled':
               colour = 16071719
               break
@@ -80,6 +80,7 @@ jobs:
           }
 
           return JSON.stringify(json)
+          
     - name: Send notification
       run: |
         curl --http2-prior-knowledge --tlsv1.3 --false-start --tcp-fastopen --compressed -sS -m 10 -H "Content-Type: application/json" --request POST -d '${{ steps.create-json.outputs.result }}' ${{ env.DISCORD_WEBHOOK }}
