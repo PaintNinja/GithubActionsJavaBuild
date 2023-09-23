@@ -4,10 +4,8 @@
 name: Java CI with Gradle
 
 on:
-  workflow_run:
-  
-  #push:
-  #  branches: [ "master" ]
+  push:
+   branches: [ "master" ]
 
 permissions:
   contents: read
