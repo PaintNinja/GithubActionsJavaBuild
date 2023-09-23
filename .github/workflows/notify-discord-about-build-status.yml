@@ -82,6 +82,6 @@ jobs:
           return JSON.stringify(json)
     - name: Send notification
       run: |
-        curl --http2-prior-knowledge --false-start --tcp-fastopen -sS -H "Content-Type: application/json" --request POST --data ${{ steps.create-json.outputs.result }} ${{ env.DISCORD_WEBHOOK }}
+        curl --http3-only --tlsv1.3 --false-start --tcp-fastopen --compressed -sS -m 10 -H "Content-Type: application/json" --request POST -d '${{ steps.create-json.outputs.result }}' ${{ env.DISCORD_WEBHOOK }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
