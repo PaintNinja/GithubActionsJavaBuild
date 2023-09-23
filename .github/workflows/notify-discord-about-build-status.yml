@@ -28,6 +28,9 @@ jobs:
           'use strict';
           const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
           const { ref_type, ref_name, head_commit_message } = process.env
+
+          console.log('context')
+          console.log(context)
           
           const title = capitalise(context.payload.inputs.build_status)
           let colour
