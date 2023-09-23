@@ -1,0 +1,18 @@
+name: GitHub script test
+
+on:
+  workflow_dispatch:
+    inputs:
+      build_status:
+        required: true
+        type: string
+
+jobs:
+  script:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/github-script@v6
+      with:
+        script: |
+          console.log(context)
+          console.log(github)
