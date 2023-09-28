@@ -10,7 +10,7 @@ permissions:
 jobs:
   notify-discord-start:
     name: Notify Discord (start)
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+    uses: Jonathing/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: started
     secrets:
@@ -35,7 +35,7 @@ jobs:
     name: Notify Discord (end)
     needs: [ "notify-discord-start", "build" ]
     if: ${{ always() }}
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+    uses: Jonathing/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: ${{ needs.build.result }}
     secrets:
