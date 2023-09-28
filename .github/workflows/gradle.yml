@@ -22,6 +22,7 @@ jobs:
     - uses: actions/checkout@v3
 
     - name: Make Gradle executable
+      # language=bash
       run: chmod +x ./gradlew
 
     - name: Build with Gradle
@@ -38,5 +39,6 @@ jobs:
     uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: ${{ needs.build.result }}
+      build_number: ${{ needs.notify-discord-start.outputs.build_number }}
     secrets:
       webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
