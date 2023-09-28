@@ -44,7 +44,6 @@ jobs:
         # language=js
         script: |
           'use strict';
-          const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
           const { build_number, commit_desc, commit_tag } = process.env
 
           // if we have a build number, use it.
