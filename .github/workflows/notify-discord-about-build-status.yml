@@ -66,8 +66,8 @@ jobs:
       id: create-json
       uses: actions/github-script@v6
       env:
-        build_number: ${{ steps.get-build-number.outputs.result }}
         build_status: ${{ inputs.build_status }}
+        build_number: ${{ steps.get-build-number.outputs.result }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
       with:
@@ -76,7 +76,7 @@ jobs:
         script: |
           'use strict';
           const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-          const { build_status, ref_type, ref_name, build_number } = process.env
+          const { build_status, build_number, ref_type, ref_name } = process.env
 
           const title = capitalise(build_status)
           let colour
