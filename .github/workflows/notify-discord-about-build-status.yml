@@ -27,6 +27,7 @@ jobs:
         fetch-depth: 0
       if: inputs.build_number == '???'
     - name: Get git commit description
+      # language=bash
       run: |
         echo "GIT_COMMIT_DESC=$(git describe --tags)" >> $GITHUB_ENV
         echo "GIT_COMMIT_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
@@ -40,23 +41,97 @@ jobs:
         commit_tag: ${{ env.GIT_COMMIT_TAG }}
       with:
         result-encoding: string
+        # language=js
         script: |
-          const script = require('./.github/workflows/js/get-build-number.js')
-          return script({github, context})
+          'use strict';
+          const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+          const { build_number, commit_desc, commit_tag } = process.env
+
+          // if we have a build number, use it.
+          if (build_number !== '???') return build_number
+
+          // initialize fallback build number
+          let buildNumber = '???'
+
+          // split the description. assume tag-offset-sha.
+          const splitDesc = commit_desc.split('-')
+
+          // if the split desc has more than one -, it means it probably has the info we need
+          if (splitDesc.length > 1) {
+            buildNumber = splitDesc[0] + '.' + splitDesc[1]
+          }
+
+          return buildNumber;
     - name: Create JSON embed for Discord
       id: create-json
       uses: actions/github-script@v6
       env:
-        build_status: ${{ steps.get-build-number.outputs.result }}
+        build_number: ${{ steps.get-build-number.outputs.result }}
+        build_status: ${{ inputs.build_status }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
       with:
         result-encoding: string
+        # language=js
         script: |
-          const script = require('./.github/workflows/js/notify-discord.js')
-          return script({github, context})
-          
+          'use strict';
+          const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
+          const { build_status, ref_type, ref_name, build_number } = process.env
+
+          const title = capitalise(build_status)
+          let colour
+          switch (title) {
+            case 'Success':
+              colour = 2684508
+              break
+            case 'Failure':
+            case 'Cancelled':
+              colour = 16071719
+              break
+            case 'Started':
+              colour = 3224808
+              break
+          }
+
+          const json = {
+            username: 'GitHub Actions',
+            avatar_url: 'https://github.githubassets.com/images/modules/logos_page/GitHub-Mark.png',
+            embeds: [{
+              author: {
+                name: context.payload.repository.name,
+                url: context.payload.repository.html_url,
+                icon_url: 'https://avatars.githubusercontent.com/u/1390178'
+              },
+              url: `${context.payload.repository.html_url}/actions/runs/${context.runId}`,
+              title: `${title}`,
+              color: `${colour}`,
+              fields: []
+            }]
+          }
+
+          json.embeds[0].fields.push({
+            name: 'Build number',
+            value: build_number,
+            inline: true
+          })
+
+          json.embeds[0].fields.push({
+            name: `Build ${ref_type}`,
+            value: `${ref_name}`,
+            inline: true
+          })
+
+          if (title === 'Started') {
+            json.embeds[0].fields.push({
+              name: 'Commit message',
+              value: `${context.payload.head_commit.message}`
+            })
+          }
+
+          return JSON.stringify(json)
+
     - name: Send notification
+      # language=bash
       run: |
         curl --http2-prior-knowledge --tlsv1.3 --false-start --tcp-fastopen --compressed -sS -m 10 -H "Content-Type: application/json" --request POST -d '${{ steps.create-json.outputs.result }}' ${{ env.DISCORD_WEBHOOK }}
       env:
