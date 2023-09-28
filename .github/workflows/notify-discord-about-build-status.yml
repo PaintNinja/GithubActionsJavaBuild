@@ -15,7 +15,6 @@ on:
         required: true
     outputs:
       build_number:
-        type: string
         value: ${{ jobs.notify-discord.outputs.build_number }}
 
 jobs:
