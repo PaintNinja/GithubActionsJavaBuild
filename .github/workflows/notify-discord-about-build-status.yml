@@ -17,7 +17,11 @@ jobs:
     steps:
     - uses: actions/checkout@v3
     - name: Get git commit description
-      run: echo "GIT_COMMIT_DESC=$(git describe --tags)" >> $GITHUB_ENV
+      run: |
+        echo $(pwd)
+        echo $(git describe)
+        echo $(git describe --tags)
+        echo "GIT_COMMIT_DESC=$(git describe --tags)" >> $GITHUB_ENV
     - name: Create JSON embed for Discord
       id: create-json
       uses: actions/github-script@v6
