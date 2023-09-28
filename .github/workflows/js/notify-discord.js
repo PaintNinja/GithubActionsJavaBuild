@@ -1,5 +1,4 @@
 module.exports = ({github, context, env}) => {
-    'use strict';
     const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
     const { build_status, ref_type, ref_name, GIT_COMMIT_DESC } = process.env
 
