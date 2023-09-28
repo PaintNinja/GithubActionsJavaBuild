@@ -1,6 +1,6 @@
-module.exports = ({github, context, env}) => {
+module.exports = ({github, context}) => {
     const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-    const { build_status, ref_type, ref_name, commit_desc, commit_tag } = process.env
+    const { build_status, ref_type, ref_name, build_number } = process.env
 
     const title = capitalise(build_status)
     let colour
@@ -33,20 +33,9 @@ module.exports = ({github, context, env}) => {
         }]
     }
 
-    // initialize fallback build number
-    let buildNumber = '???'
-
-    // split the description. assume tag-offset-sha.
-    const splitDesc = commit_desc.split('-')
-
-    // if the split desc has more than one -, it means it probably has the info we need
-    if (splitDesc.length > 1) {
-        buildNumber = splitDesc[0] + '.' + splitDesc[1]
-    }
-
     json.embeds[0].fields.push({
         name: 'Build number',
-        value: buildNumber,
+        value: build_number,
         inline: true
     })
 

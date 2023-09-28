@@ -6,9 +6,17 @@ on:
       build_status:
         required: true
         type: string
+      build_number:
+        required: false
+        type: string
+        default: "???"
     secrets:
       webhook_url:
         required: true
+    outputs:
+      build_number:
+        type: string
+        value: ${{ jobs.notify-discord.outputs.build_number }}
 
 jobs:
   notify-discord:
@@ -18,17 +26,29 @@ jobs:
     - uses: actions/checkout@v3
       with:
         fetch-depth: 0
+      if: inputs.build_number == "???"
     - name: Get git commit description
       run: |
         echo "GIT_COMMIT_DESC=$(git describe --tags)" >> $GITHUB_ENV
         echo "GIT_COMMIT_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
+      if: inputs.build_number == "???"
+    - name: Get build number
+      id: get-build-number
+      uses: actions/github-script@v6
+      env:
+        build_number: ${{ inputs.build_number }}
+        commit_desc: ${{ env.GIT_COMMIT_DESC }}
+        commit_tag: ${{ env.GIT_COMMIT_TAG }}
+      with:
+        result-encoding: string
+        script: |
+          const script = require('./.github/workflows/js/get-build-number.js')
+          return script({github, context})
     - name: Create JSON embed for Discord
       id: create-json
       uses: actions/github-script@v6
       env:
-        commit_desc: ${{ env.GIT_COMMIT_DESC }}
-        commit_tag: ${{ env.GIT_COMMIT_TAG }}
-        build_status: ${{ inputs.build_status }}
+        build_status: ${{ steps.get-build-number.outputs.result }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
       with:
@@ -42,3 +62,5 @@ jobs:
         curl --http2-prior-knowledge --tlsv1.3 --false-start --tcp-fastopen --compressed -sS -m 10 -H "Content-Type: application/json" --request POST -d '${{ steps.create-json.outputs.result }}' ${{ env.DISCORD_WEBHOOK }}
       env:
         DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
+    outputs:
+      build_number: ${{ steps.get-build-number.outputs.result }}

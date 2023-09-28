@@ -38,5 +38,6 @@ jobs:
     uses: Jonathing/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
     with:
       build_status: ${{ needs.build.result }}
+      build_number: ${{ needs.notify-discord-start.outputs.build_number }}
     secrets:
       webhook_url: ${{ secrets.DISCORD_WEBHOOK_URL }}
