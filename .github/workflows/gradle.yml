@@ -8,6 +8,12 @@ permissions:
   contents: read
 
 jobs:
+  checkout:
+    name: Checkout Git repo
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
   notify-discord-start:
     name: Notify Discord (start)
     uses: Jonathing/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
@@ -19,8 +25,6 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
-
     - name: Make Gradle executable
       run: chmod +x ./gradlew
 
