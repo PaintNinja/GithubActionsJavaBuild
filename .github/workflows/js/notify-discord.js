@@ -1,6 +1,6 @@
 module.exports = ({github, context, env}) => {
     const capitalise = (str) => str.charAt(0).toUpperCase() + str.slice(1)
-    const { build_status, ref_type, ref_name, GIT_COMMIT_DESC } = process.env
+    const { build_status, ref_type, ref_name, commit_desc } = process.env
 
     const title = capitalise(build_status)
     let colour
@@ -33,11 +33,14 @@ module.exports = ({github, context, env}) => {
         }]
     }
 
+    console.log('commit_desc: ' + commit_desc)
     let buildNumber = '???'
-    const splitDesc = GIT_COMMIT_DESC.split('-');
+    const splitDesc = commit_desc.split('-')
+    console.log('splitDesc: ' + splitDesc)
     if (splitDesc.length > 1) {
-        buildNumber = splitDesc[0] + '.' + splitDesc[1];
+        buildNumber = splitDesc[0] + '.' + splitDesc[1]
     }
+    console.log('buildNumber: ' + buildNumber)
     json.embeds[0].fields.push({
         name: 'Build number',
         value: buildNumber,

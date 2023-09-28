@@ -22,6 +22,7 @@ jobs:
       id: create-json
       uses: actions/github-script@v6
       env:
+        commit_desc: ${{ env.GIT_COMMIT_DESC }}
         build_status: ${{ inputs.build_status }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
