@@ -20,14 +20,14 @@ jobs:
         fetch-depth: 0
     - name: Get git commit description
       run: |
-        echo $(git describe)
-        echo $(git describe --tags)
         echo "GIT_COMMIT_DESC=$(git describe --tags)" >> $GITHUB_ENV
+        echo "GIT_COMMIT_TAG=$(git describe --tags --abbrev=0)" >> $GITHUB_ENV
     - name: Create JSON embed for Discord
       id: create-json
       uses: actions/github-script@v6
       env:
         commit_desc: ${{ env.GIT_COMMIT_DESC }}
+        commit_tag: ${{ env.GIT_COMMIT_TAG }}
         build_status: ${{ inputs.build_status }}
         ref_type: ${{ github.ref_type }}
         ref_name: ${{ github.ref_name }}
