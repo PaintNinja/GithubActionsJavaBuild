@@ -10,5 +10,5 @@ jobs:
     # language=bash
     - run: |
         echo $JAVA_HOME_17_X64
-        set JAVA_HOME=$JAVA_HOME_17_X64
+        set JAVA_HOME=$(echo $JAVA_HOME_17_X64)
         echo $JAVA_HOME
