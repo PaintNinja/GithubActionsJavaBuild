@@ -25,6 +25,10 @@ jobs:
       # language=bash
       run: chmod +x ./gradlew
 
+    - name: Setup Java 17
+      # language=bash
+      run: export JAVA_HOME=$(echo $JAVA_HOME_17_X64)
+
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
