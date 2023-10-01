@@ -2,7 +2,14 @@ name: Java CI with Gradle
 
 on:
   push:
-   branches: [ "master" ]
+    branches: [ "master" ]
+  workflow_call:
+    inputs:
+      java:
+        required: false
+        type: string
+        default: "17"
+        description: "The version of Java to use to run Gradle" # Note: Gradle's Java toolchains feature is used for compiling, which is separate from this
 
 permissions:
   contents: read
@@ -19,7 +26,7 @@ jobs:
   build:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
 
     - name: Make Gradle executable
       # language=bash
@@ -28,7 +35,7 @@ jobs:
     - name: Setup Java 17
       # https://github.com/actions/runner-images/blob/main/images/linux/Ubuntu2204-Readme.md#java
       # language=bash
-      run: export JAVA_HOME=$(echo $JAVA_HOME_17_X64)
+      run: export JAVA_HOME=$(echo $JAVA_HOME_${{ inputs.java }}_X64)
 
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
