@@ -10,6 +10,10 @@ on:
         type: string
         default: "17"
         description: "The version of Java to use to run Gradle" # Note: Gradle's Java toolchains feature is used for compiling, which is separate from this
+      gradle_tasks:
+        required: false
+        type: string
+        default: "build"
 
 permissions:
   contents: read
