@@ -1,4 +1,4 @@
-name: Java CI with Gradle
+name: Gradle CI
 
 on:
   push:
@@ -10,7 +10,8 @@ on:
         required: false
         type: string
         default: "17"
-      gradle_tasks:
+      tasks:
+        description: "The Gradle tasks to run"
         required: false
         type: string
         default: "publish"
@@ -27,6 +28,7 @@ on:
         - "11"
         - "8"
       gradle_tasks:
+        description: "The Gradle tasks to run"
         required: false
         type: string
         default: "publish"
@@ -60,13 +62,13 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: ${{ inputs.gradle_tasks }}
+        arguments: ${{ inputs.tasks }}
 
   notify-discord-end:
     name: Notify Discord (end)
     needs: [ "notify-discord-start", "build" ]
     if: ${{ always() }}
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/notify-discord-about-build-status.yml@master
+    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/discord-build-notifier.yml@master
     with:
       build_status: ${{ needs.build.result }}
       build_number: ${{ needs.notify-discord-start.outputs.build_number }}
