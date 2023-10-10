@@ -1,0 +1,79 @@
+name: Request download page update
+
+on:
+  workflow_call:
+    inputs:
+      promote_group:
+        required: false
+        type: string
+        default: ''
+      promote_version:
+        required: false
+        type: string
+        default: ''
+      promote_type:
+        required: false
+        type: string
+        default: "Latest"
+      regen:
+        required: false
+        type: boolean
+        default: true
+  workflow_dispatch:
+    inputs:
+      promote_group:
+        required: false
+        type: string
+        default: ''
+      promote_version:
+        required: false
+        type: string
+        default: ''
+      promote_type:
+        required: false
+        type: choice
+        default: "Latest"
+        options:
+        - "Latest"
+        - "Recommended"
+      regen:
+        required: false
+        type: boolean
+        default: true
+
+jobs:
+  request-pagegen-update:
+    name: Request download page update
+    runs-on: ubuntu-latest
+    steps:
+    - name: Create JSON
+      id: create-json
+      uses: actions/github-script@v6
+      env:
+        promote_group: ${{ inputs.promote_group }}
+        promote_version: ${{ inputs.promote_version }}
+        promote_type: ${{ inputs.promote_type }}
+        regen: ${{ inputs.regen }}
+      with:
+        result-encoding: string
+        # language=js
+        script: |
+          'use strict';
+          const { promote_group, promote_version, promote_type, regen } = process.env;
+          
+          let obj = { regen: regen };
+          if (promote_group !== '') {
+            obj.promote = {
+              group: promote_group,
+              version: promote_version,
+              type: promote_type
+            };
+          }
+          
+          return JSON.stringify(obj);
+    - name: Notify webhook
+      # language=bash
+      run: |
+        curl --compressed -sS -m 10 -H "Content-Type: application/json" --request POST -d '${{ steps.create-json.outputs.result }}' ${{ env.PAGEGEN_WEBHOOK }}
+      env:
+        PAGEGEN_WEBHOOK: ${{ secrets.pagegen_url }}
