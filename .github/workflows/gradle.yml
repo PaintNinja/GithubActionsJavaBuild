@@ -29,7 +29,7 @@ on:
           - "17"
           - "11"
           - "8"
-      gradle_tasks:
+      tasks:
         description: "The Gradle tasks to run"
         required: false
         type: string
@@ -41,7 +41,7 @@ permissions:
 jobs:
   notify-discord-start:
     name: Notify Discord (start)
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/discord-build-notifier.yml@main
+    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/discord-build-notifier.yml@master
     with:
       build_status: started
     secrets:
@@ -70,7 +70,7 @@ jobs:
     name: Notify Discord (end)
     needs: [ "notify-discord-start", "gradle-tasks" ]
     if: ${{ always() }}
-    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/discord-build-notifier.yml@main
+    uses: PaintNinja/GithubActionsJavaBuild/.github/workflows/discord-build-notifier.yml@master
     with:
       build_status: ${{ needs.gradle-tasks.result }}
       build_number: ${{ needs.notify-discord-start.outputs.build_number }}
