@@ -9,7 +9,11 @@ on:
       build_number:
         required: false
         type: string
-        default: '???'
+        default: "???"
+      author_icon_url:
+        required: false
+        type: string
+        default: "https://avatars.githubusercontent.com/u/1390178"
     secrets:
       webhook_url:
         required: true
