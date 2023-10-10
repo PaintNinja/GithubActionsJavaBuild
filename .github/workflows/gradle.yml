@@ -6,14 +6,30 @@ on:
   workflow_call:
     inputs:
       java:
+        description: "The version of Java to use to run Gradle" # Note: Gradle's Java toolchains feature is used for compiling, which is separate from this
         required: false
         type: string
         default: "17"
-        description: "The version of Java to use to run Gradle" # Note: Gradle's Java toolchains feature is used for compiling, which is separate from this
       gradle_tasks:
         required: false
         type: string
-        default: "build"
+        default: "publish"
+  workflow_dispatch:
+    inputs:
+      java:
+        description: "The version of Java to use to run Gradle"
+        required: false
+        type: choice
+        default: "17"
+        options:
+        - "21"
+        - "17"
+        - "11"
+        - "8"
+      gradle_tasks:
+        required: false
+        type: string
+        default: "publish"
 
 permissions:
   contents: read
@@ -44,7 +60,7 @@ jobs:
     - name: Build with Gradle
       uses: gradle/gradle-build-action@v2
       with:
-        arguments: build
+        arguments: ${{ inputs.gradle_tasks }}
 
   notify-discord-end:
     name: Notify Discord (end)
