@@ -30,7 +30,7 @@ jobs:
         with:
           fetch-depth: 0
           fetch-tags: true
-        if: inputs.build_number == '???'
+        if: inputs.build_number == '???' && inputs.author_icon_url != ''
 
       - name: Make Gradle executable
         if: inputs.build_number == '???'
