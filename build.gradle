@@ -8,4 +8,6 @@ println "Version: $version"
 
 println "Gradle is currently running on Java ${JavaVersion.current()}"
 
+println "::set-output name=PROJ_VERSION::$version"
+
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
