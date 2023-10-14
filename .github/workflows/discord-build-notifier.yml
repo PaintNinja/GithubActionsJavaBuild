@@ -38,6 +38,7 @@ jobs:
         run: chmod +x ./gradlew
 
       - name: Get build number from GradleUtils
+        id: get-build-number
         if: inputs.build_number == '???'
         uses: gradle/gradle-build-action@v2
         with:
@@ -119,4 +120,4 @@ jobs:
         env:
           DISCORD_WEBHOOK: ${{ secrets.webhook_url }}
     outputs:
-      build_number: ${{ env.PROJ_VERSION }}
+      build_number: ${{ steps.get-build-number.outputs.PROJ_VERSION }}
