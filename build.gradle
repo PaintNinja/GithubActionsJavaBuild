@@ -3,6 +3,9 @@ plugins {
     id 'net.minecraftforge.gradleutils' version '2.+'
 }
 
+version = gradleutils.getTagOffsetVersion()
+println "Version: $version"
+
 println "Gradle is currently running on Java ${JavaVersion.current()}"
 
 java.toolchain.languageVersion = JavaLanguageVersion.of(17)
