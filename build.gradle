@@ -1,5 +1,6 @@
 plugins {
     id 'java'
+    id 'net.minecraftforge.gradleutils' version '2.+'
 }
 
 println "Gradle is currently running on Java ${JavaVersion.current()}"
